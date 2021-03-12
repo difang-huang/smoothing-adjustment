@@ -1,0 +1,20 @@
+function [b,se,tstat,r2]=rollingols(y,x,window)
+n=length(y);
+rn=n-window+1;
+b=ones(rn,1);
+se=ones(rn,1);
+tstat=ones(rn,1);
+r2=ones(rn,1);
+for t =1:rn
+    xx=x(t:(t+window-1));
+    yy=y(t:(t+window-1));
+    xxx=[ones(window,1),xx];
+    coef=inv(xxx'*xxx)*xxx'*yy;
+    ehat=yy-xxx*coef;
+    sigma2=sum(ehat.^2)/window;
+    sem=inv(xxx'*xxx)*sigma2;
+    b(t)=coef(2);
+    se(t)=sqrt(sem(2,2));
+    tstat(t)=coef(2)/sqrt(sem(2,2));
+    r2=1-sum(ehat.^2)/sum((yy-mean(yy)).^2);
+end
